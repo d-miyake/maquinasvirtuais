@@ -1,0 +1,1155 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Máquinas Virtuais: A Saga - Super Mario World Retrô</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0a0a10;overflow:hidden;font-family:'Press Start 2P','Courier New',monospace;color:#fff;-webkit-tap-highlight-color:transparent}
+
+/* Viewport principal 960x540 escalonado */
+#g{position:absolute;left:50%;top:50%;width:960px;height:540px;transform-origin:0 0;overflow:hidden;background:#5c94fc;user-select:none;box-shadow:0 0 45px rgba(0,0,0,0.95)}
+.sc{position:absolute;inset:0;display:none;overflow:hidden}.sc.on{display:block}
+.s{position:absolute;image-rendering:pixelated}
+
+/* Cenário Céu e Nuvens */
+.sky{position:absolute;inset:0;background:linear-gradient(#3878f0,#7cb4ff 65%,#bfe2ff)}
+.cl{position:absolute;width:120px;height:36px;background:#fff;border-radius:22px;box-shadow:34px -16px 0 6px #fff,68px 2px 0 2px #fff;animation:dr 45s linear infinite;opacity:.95}
+@keyframes dr{from{transform:translateX(-220px)}to{transform:translateX(1160px)}}
+
+/* Colinas clássicas do Super Mario World */
+.hill{position:absolute;bottom:90px;background:#24b024;border:5px solid #004d00;border-radius:100px 100px 0 0;box-shadow:inset -22px 0 #167a16,inset 12px 0 #3ae03a}
+.hill:before,.hill:after{content:"";position:absolute;top:28%;width:9px;height:24px;background:#000;border-radius:4px;left:38%}.hill:after{left:58%}
+
+/* Arbustos */
+.bush{position:absolute;bottom:90px;height:42px;background:#18c818;border:4px solid #004d00;border-radius:24px 24px 0 0;box-shadow:inset 0 -8px #0d800d}
+
+/* Chão clássico quadriculado SMW */
+.gr{position:absolute;left:0;right:0;bottom:0;height:90px;background:radial-gradient(#f0b060 2px,transparent 3px) 0 0/16px 16px,linear-gradient(#2cd02c 0 14px,#005000 14px 18px,#c07830 18px);background-color:#c07830;border-top:4px solid #000;z-index:4}
+
+/* Bloco de Interrogação clássico (?) */
+.q{position:absolute;width:64px;height:64px;background:#f8b800;border:4px solid #000;box-shadow:inset 4px 4px #ffe478,inset -4px -4px #b87000,0 6px rgba(0,0,0,0.3);font-size:36px;line-height:56px;text-align:center;color:#fff;text-shadow:3px 3px #000;animation:qglow 1.2s steps(2) infinite;z-index:6}
+@keyframes qglow{0%,100%{background:#f8b800}50%{background:#fcd038}}
+.q.hit{transform:translateY(-16px);transition:transform .1s cubic-bezier(.1,.9,.2,1)}
+.q.used{background:#985820;box-shadow:inset 4px 4px #c07838,inset -4px -4px #603010;color:transparent;animation:none}
+
+.bob{animation:bob .28s steps(2) infinite}@keyframes bob{50%{transform:translateY(-6px)}}
+
+/* Botões com estética retrô arcade */
+.btn{font:inherit;font-size:12px;color:#fff;background:#e52521;border:4px solid #000;box-shadow:inset 0 -6px #940f0c,inset 0 4px #ff7065,4px 4px 0 rgba(0,0,0,0.4);padding:12px 18px;cursor:pointer;text-shadow:2px 2px #000;letter-spacing:1px;border-radius:4px}
+.btn:hover{filter:brightness(1.18);transform:translateY(-2px)}
+.btn:active{transform:translate(2px,2px);box-shadow:inset 0 -2px #940f0c,inset 0 2px #ff7065}
+.btn.b{background:#1840f0;box-shadow:inset 0 -6px #0b1f8f,inset 0 4px #6585ff,4px 4px 0 rgba(0,0,0,0.4)}
+.btn.y{background:#f8b800;color:#000;text-shadow:none;box-shadow:inset 0 -6px #a86800,inset 0 4px #ffec80,4px 4px 0 rgba(0,0,0,0.4)}
+.btn.g{background:#20b820;box-shadow:inset 0 -6px #0d6b0d,inset 0 4px #68ea68,4px 4px 0 rgba(0,0,0,0.4)}
+.btn:disabled{opacity:.4;cursor:not-allowed;filter:none;transform:none}
+
+/* Cortina de transição */
+#f{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .45s ease;z-index:90}
+
+/* Logo Oficial do SENAI Pixelizada */
+#logo{position:absolute;right:14px;top:12px;z-index:45;background:#ffffff;border:4px solid #000;border-radius:8px;padding:6px 12px;box-shadow:4px 4px 0 rgba(0,0,0,0.5)}
+#logo img{display:block;width:130px;height:auto;image-rendering:pixelated}
+
+/* Botão de Som */
+#mu{position:absolute;left:14px;top:12px;z-index:45;font-size:15px;background:#000000bb;border:3px solid #fff;color:#fff;padding:8px 10px;cursor:pointer;border-radius:6px;box-shadow:3px 3px 0 rgba(0,0,0,0.5)}
+#mu:hover{background:#e52521}
+
+/* Título estilizado Super Mario */
+.ttl{font-size:42px;line-height:52px;text-align:center;text-shadow:4px 4px #000;-webkit-text-stroke:2px #000;paint-order:stroke fill}
+.c0{color:#f83838}.c1{color:#18d0f8}.c2{color:#f8d018}.c3{color:#20d820}
+#ttl{position:absolute;left:0;right:0;top:45px;opacity:0;transform:translateY(180px) scale(.2);transition:all .8s cubic-bezier(.2,1.35,.4,1);z-index:10}
+#ttl.show{opacity:1;transform:none}
+#ttl small{display:block;font-size:20px;margin-top:8px}
+
+#sb{position:absolute;left:50%;top:355px;transform:translateX(-50%);font-size:16px;opacity:0;pointer-events:none;transition:opacity .4s;z-index:15}
+#sb.show{opacity:1;pointer-events:auto;animation:pul 1s steps(2) infinite}
+@keyframes pul{50%{transform:translateX(-50%) translateY(-6px)}}
+
+.cred{position:absolute;left:0;right:0;bottom:10px;text-align:center;font-size:9px;line-height:16px;color:#fff;text-shadow:2px 2px #000;padding:0 150px;z-index:5}
+
+/* Mapa Mundi estilo Super Mario World */
+.sea{position:absolute;inset:0;background:repeating-linear-gradient(#2870ea 0 16px,#3b82fc 16px 22px);animation:seamove 4s linear infinite}
+@keyframes seamove{0%{background-position:0 0}100%{background-position:0 22px}}
+.isl{position:absolute;left:50px;top:65px;width:860px;height:410px;background:#44c828;border:14px solid #c8843c;border-radius:55px;box-shadow:inset 0 0 0 8px #2b9c16,6px 6px 0 rgba(0,0,0,0.4)}
+.nd{position:absolute;width:52px;height:52px;border:5px solid #000;border-radius:50%;cursor:pointer;background:#888;display:flex;align-items:center;justify-content:center;font-size:18px;z-index:8;box-shadow:3px 3px 0 rgba(0,0,0,0.5);transition:transform .15s}
+.nd.open{background:#f8d818;animation:ndpul 1s steps(2) infinite}
+@keyframes ndpul{50%{transform:scale(1.12)}}
+.nd.done{background:#e52521;animation:none}
+.nd.lock{filter:grayscale(1);opacity:.75;cursor:not-allowed}
+.nd.pop{animation:pp .6s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pp{0%{transform:scale(0)}70%{transform:scale(1.4)}100%{transform:scale(1)}}
+
+.lb{position:absolute;width:220px;text-align:center;font-size:9px;line-height:15px;background:#000000dd;padding:6px 8px;border:3px solid #fff;border-radius:6px;transform:translateX(-50%);pointer-events:none;z-index:7;box-shadow:3px 3px 0 rgba(0,0,0,0.5)}
+.arw{position:absolute;font-size:22px;color:#ff2020;text-shadow:2px 2px #000;animation:arwfly .6s steps(2) infinite;pointer-events:none;z-index:9}
+@keyframes arwfly{50%{transform:translateY(-8px)}}
+.map-title{position:absolute;left:70px;top:80px;font-size:12px;background:#000000cc;padding:8px 12px;border:3px solid #f8d818;border-radius:6px;color:#fff;z-index:7}
+
+/* Fases de Explicação */
+.box{position:absolute;background:#fff8dc;color:#1a1a1a;border:6px solid #000;box-shadow:inset 0 0 0 4px #e8c454,6px 6px 0 rgba(0,0,0,0.5);padding:24px;border-radius:10px;z-index:5}
+.box h2{font-size:15px;line-height:24px;color:#d81c18;margin-bottom:14px;border-bottom:3px dashed #d81c18;padding-bottom:6px}
+.box p{font-size:11px;line-height:22px;letter-spacing:0.5px}
+.hd{position:absolute;left:50px;top:20px;font-size:12px;text-shadow:3px 3px #000;line-height:22px;background:#000000b0;padding:6px 12px;border-radius:6px;border:2px solid #fff;z-index:10}
+.hd b{color:#f8d818;font-size:15px}
+
+.vis{position:absolute;left:570px;top:100px;width:350px;height:310px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center;align-content:center;z-index:5}
+.ic{width:105px;background:#000000c8;border:4px solid #fff;border-radius:8px;padding:12px 6px;text-align:center;font-size:9px;line-height:14px;color:#fff;box-shadow:4px 4px 0 rgba(0,0,0,0.4);animation:floatCard 1.6s ease-in-out infinite}
+.ic i{display:block;font-style:normal;font-size:38px;margin-bottom:8px}
+.ic:nth-child(2){animation-delay:.35s}.ic:nth-child(3){animation-delay:.7s}
+@keyframes floatCard{50%{transform:translateY(-10px)}}
+
+.nav{position:absolute;left:40px;right:40px;bottom:22px;display:flex;justify-content:space-between;align-items:center;z-index:15}
+.nav-grp{display:flex;gap:10px;align-items:center}
+.dots{font-size:18px;letter-spacing:8px;text-shadow:2px 2px #000;color:#f8d818}
+
+/* Inimigos e animações de fase (Galoomba SMW andando da DIREITA para a ESQUERDA) */
+.wk{animation:wk_rtl 14s linear infinite}
+@keyframes wk_rtl{from{left:1050px}to{left:-90px}}
+
+.sw-cheep{animation:cheepswim 12s linear infinite}@keyframes cheepswim{from{left:1020px}to{left:-100px}}
+.sw-bullet{animation:bulletfly 8s linear infinite}@keyframes bulletfly{from{left:1020px}to{left:-120px}}
+.bub{position:absolute;bottom:-20px;width:14px;height:14px;border:3px solid #bdf;border-radius:50%;background:rgba(255,255,255,0.3);animation:bubrise 6s linear infinite}
+@keyframes bubrise{to{bottom:560px;transform:translateX(20px)}}
+.pipe{position:absolute;bottom:90px;width:74px;background:#1cb01c;border:4px solid #000;box-shadow:inset 12px 0 #68ee68,inset -12px 0 #0b680b;z-index:3}
+.pipe:before{content:"";position:absolute;left:-10px;right:-10px;top:-4px;height:28px;background:#1cb01c;border:4px solid #000;box-shadow:inset 12px 0 #68ee68,inset -12px 0 #0b680b}
+
+/* Castelo do Bowser */
+.brk{position:absolute;inset:0;background:linear-gradient(#00000060,#00000060),repeating-linear-gradient(90deg,#2b2b3b 0 4px,transparent 4px 64px),repeating-linear-gradient(#2b2b3b 0 4px,#484858 4px 44px);background-color:#484858}
+.lava{position:absolute;left:0;right:0;bottom:0;height:70px;background:repeating-linear-gradient(90deg,#f82800 0 24px,#f89010 24px 48px);animation:lavawave .7s steps(2) infinite;border-top:4px solid #000;z-index:5}
+@keyframes lavawave{50%{background-position:24px 0}}
+.brg{position:absolute;bottom:70px;height:30px;background:repeating-linear-gradient(90deg,#999 0 28px,#555 28px 32px);border-top:5px solid #ddd;border-bottom:4px solid #000;z-index:4}
+.pod{position:absolute;bottom:60px;width:22px;height:28px;background:#f87000;border:3px solid #ffde59;border-radius:50% 50% 30% 30%;animation:lavapod 2.4s ease-out infinite;z-index:6}
+@keyframes lavapod{0%{transform:translateY(0)}45%{transform:translateY(-290px)}90%,100%{transform:translateY(0)}}
+.torch{position:absolute;font-size:32px;animation:torchflicker .4s steps(2) infinite;z-index:3}
+@keyframes torchflicker{50%{transform:scale(1.15) translateY(-3px)}}
+
+/* Quiz no Castelo */
+.qc{position:absolute;left:110px;top:45px;width:740px;background:#14142ccc;border:5px solid #fff;border-radius:10px;box-shadow:6px 6px 0 rgba(0,0,0,0.7);padding:18px;z-index:10}
+.qc .st{font-size:10px;color:#f8d818;margin-bottom:12px;display:flex;justify-content:space-between;border-bottom:2px solid #334;padding-bottom:6px}
+.qc h3{font-size:13px;line-height:22px;margin-bottom:14px;color:#fff}
+.op{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.op button{font:inherit;font-size:10px;line-height:16px;text-align:left;padding:12px 10px;background:#183cd0;color:#fff;border:3px solid #fff;border-radius:6px;cursor:pointer;min-height:60px;box-shadow:3px 3px 0 rgba(0,0,0,0.4);transition:background .1s}
+.op button:hover:not(:disabled){background:#4268ff;transform:translateY(-2px)}
+.op button.ok{background:#18a818!important;border-color:#7fff7f}
+.op button.no{background:#c01818!important;opacity:.65;border-color:#ff7f7f}
+.msg{font-size:10px;line-height:16px;margin-top:12px;min-height:32px;color:#f8d818;background:#000000a0;padding:6px 10px;border-radius:4px;border-left:4px solid #f8d818}
+.shk{animation:shake .35s ease-in-out}@keyframes shake{20%{transform:translateX(-12px)}40%{transform:translateX(12px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+#bw{transition:transform 1.8s ease-in,opacity 1.8s;z-index:4}
+#bw.fall{transform:translateY(360px) rotate(380deg) scale(0.6);opacity:0}
+
+/* Modal de Vitória / Conclusão */
+.fim{position:absolute;left:180px;top:55px;width:600px;background:#14142af0;border:6px solid #fff;border-radius:12px;padding:26px;text-align:center;display:none;z-index:20;box-shadow:0 0 35px rgba(0,0,0,0.9)}
+.fim.show{display:block}
+.fim p{font-size:10px;line-height:18px;margin:10px 0}
+
+/* Aviso de orientação mobile */
+@media (orientation:portrait){#rot{display:flex}}
+#rot{display:none;position:fixed;inset:0;background:#000000f5;color:#fff;font-size:12px;line-height:22px;text-align:center;z-index:999;align-items:center;justify-content:center;padding:30px}
+</style>
+</head>
+<body>
+
+<div id="rot">🔄 POR FAVOR, GIRE SEU DISPOSITIVO PARA O MODO PAISAGEM (HORIZONTAL) PARA JOGAR!</div>
+
+<div id="g">
+  <!-- Cenas -->
+  <div id="title" class="sc"></div>
+  <div id="map" class="sc"></div>
+  <div id="les" class="sc"></div>
+  <div id="cas" class="sc"></div>
+  <div id="end" class="sc"></div>
+
+  <!-- Cortina preta de transição -->
+  <div id="f"></div>
+
+  <!-- Logo Oficial SENAI Pixelizada -->
+  <div id="logo" title="SENAI - Mundo SENAI">
+    <img id="logo-img" alt="SENAI">
+  </div>
+
+  <!-- Botão de Som no topo esquerdo -->
+  <button id="mu" title="Ativar/Desativar Som Retrô">🔊</button>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),sl=ms=>new Promise(r=>setTimeout(r,ms)),G=$('#g');
+
+/* ASSETS EMBARCADOS (Logo SENAI Pixelizada e Galoomba SMW Oficial) */
+const SENAI_PIXEL_SRC = "data:image/png;base64,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";
+const GALOOMBA_SRC = "data:image/png;base64,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";
+
+$('#logo-img').src = SENAI_PIXEL_SRC;
+
+/* Ajuste e Redimensionamento Fluido */
+function rs(){
+  const s=Math.min(innerWidth/960,innerHeight/540);
+  G.style.transform=`scale(${s})`;
+  G.style.marginLeft=-480*s+'px';
+  G.style.marginTop=-270*s+'px';
+}
+addEventListener('resize',rs);rs();
+
+/* =========================================================================
+   SINTETIZADOR DE ÁUDIO WEB CHIPTUNE (Efeitos Sonoros e Trilha em Loop)
+   ========================================================================= */
+let ac,mute=false,bgmTimer=null,bgmStep=0;
+
+function initAudio(){
+  if(!ac){
+    try{
+      ac=new(window.AudioContext||webkitAudioContext)();
+      if(ac.state==='suspended'){
+        ac.resume();
+      }
+      startBGM();
+    }catch(e){}
+  }
+}
+
+function bp(f,d,t='square',v=0.06,dl=0){
+  if(mute||!ac)return;
+  try{
+    const o=ac.createOscillator(),g=ac.createGain(),T=ac.currentTime+dl;
+    o.type=t;
+    o.frequency.setValueAtTime(f,T);
+    g.gain.setValueAtTime(v,T);
+    g.gain.linearRampToValueAtTime(0,T+d);
+    o.connect(g);g.connect(ac.destination);
+    o.start(T);o.stop(T+d);
+  }catch(e){}
+}
+
+/* SFX do Jogo */
+const SFX={
+  coin:()=>{bp(988,.08);bp(1319,.35,'square',.07,.08)},
+  jump:()=>{bp(320,.07);bp(580,.13,'square',.06,.07)},
+  bump:()=>bp(110,.14,'triangle',.18),
+  click:()=>bp(660,.05),
+  pipe:()=>{bp(320,.1,'triangle',.12);bp(210,.2,'triangle',.12,.1)},
+  ok:()=>[523,659,784,1047].forEach((f,i)=>bp(f,.12,'square',.06,i*.09)),
+  no:()=>{bp(180,.16,'sawtooth',.08);bp(120,.28,'sawtooth',.08,.15)},
+  win:()=>[523,523,523,659,784,659,784,1047].forEach((f,i)=>bp(f,.13,'square',.07,i*.11)),
+  slide:()=>{for(let i=0;i<16;i++)bp(580-i*22,.1,'sine',.04,i*.06)},
+  boom:()=>{bp(90,.35,'sawtooth',.16);bp(50,.5,'triangle',.22,.1)}
+};
+
+/* Trilha Chiptune Retrô em Loop (Super Mario Theme Inspired) */
+const MELODY=[
+  659,659,0,659,0,523,659,0,784,0,0,0,392,0,0,0,
+  523,0,0,392,0,0,330,0,0,440,0,494,0,466,440,0,
+  392,659,784,880,0,698,784,0,659,0,523,587,494,0,0,0
+];
+const BASS=[
+  261,0,392,0,261,0,392,0,196,0,392,0,196,0,392,0,
+  220,0,330,0,220,0,330,0,174,0,261,0,174,0,261,0,
+  196,0,293,0,196,0,293,0,261,0,392,0,261,0,392,0
+];
+
+function startBGM(){
+  if(bgmTimer)clearInterval(bgmTimer);
+  bgmStep=0;
+  bgmTimer=setInterval(()=>{
+    if(mute||!ac||ac.state==='suspended')return;
+    const mNote=MELODY[bgmStep%MELODY.length];
+    const bNote=BASS[bgmStep%BASS.length];
+    if(mNote>0)bp(mNote,0.11,'square',0.022);
+    if(bNote>0)bp(bNote,0.14,'triangle',0.035);
+    bgmStep++;
+  },140);
+}
+
+$('#mu').onclick=()=>{
+  initAudio();
+  mute=!mute;
+  $('#mu').textContent=mute?'🔇':'🔊';
+};
+
+function goHome(){
+  if(busy)return;
+  initAudio();
+  SFX.click();
+  go(()=>{
+    buildTitle();
+    show('title');
+    playTitle();
+  });
+}
+
+/* =========================================================================
+   SPRITES PIXEL ART (Super Mario World 16-Bit Style)
+   ========================================================================= */
+const P={
+  R:'#e52521',B:'#2038ec',S:'#ffb98a',N:'#6b3a12',Y:'#fcd800',W:'#ffffff',
+  K:'#000000',G:'#18a818',D:'#0a6a0a',O:'#f89818',P:'#ff8ad0',L:'#f8d838',
+  E:'#9c5a20',C:'#a0a0b0',H:'#707080',T:'#c0c0d0',Q:'#f83800'
+};
+
+const SP={
+  mario:[
+    "....RRRRR.......",
+    "...RRRRRRRRR....",
+    "...NNNSSNS......",
+    "..NSNSSSNSSS....",
+    "..NSNNSSSNSS....",
+    "..NNSSSSNNNN....",
+    "....SSSSSSS.....",
+    "...RRBRRR.......",
+    "..RRRBRRBRRR....",
+    ".RRRRBBBBRRRR...",
+    ".SSRBYBBYBRSS...",
+    ".SSSBBBBBBSSS...",
+    ".SSBBBBBBBBSS...",
+    "...BBB..BBB.....",
+    "..NNN....NNN....",
+    ".NNNN....NNNN..."
+  ],
+  mario_slide:[
+    "...RRRRR........",
+    "..RRRRRRRRR.....",
+    "..NNNSSNS.......",
+    ".NSNSSSNSSS.WW..",
+    ".NSNNSSSNSS.WW..",
+    ".NNSSSSNNNN.....",
+    "...SSSSSSS......",
+    "..RRBRRR........",
+    ".RRRBRRBRRR.WW..",
+    "RRRRBBBBRRRRWW..",
+    "SSRBYBBYBRSS....",
+    "SSSBBBBBBSSS....",
+    ".SBBBBBBBBSS....",
+    "..BBBBBBBB.NN...",
+    "..NNNNNNNNNNN...",
+    "...NNNNNNNN....."
+  ],
+  peach:[
+    "....Y.W.Y.......",
+    "...LLLLLLL......",
+    "..LLLLLLLLL.....",
+    "..LLSSSSLL......",
+    "..LLSKSKSL......",
+    "..LLSSSSSL......",
+    "...LSSPSL.......",
+    "....PPPP........",
+    "...PPPPPP.......",
+    "..PPPPPPPP......",
+    ".SPPPPPPPPS.....",
+    ".SSPPPPPPSS.....",
+    ".PPPPPPPPPP.....",
+    "PPPPPPPPPPPP....",
+    "PPPPPPPPPPPP....",
+    ".WWWW..WWWW....."
+  ],
+  bowser:[
+    "..R.R......W..W.....",
+    ".RRRRR....GGGGGG....",
+    ".RRROO...GGWGGWGG...",
+    "RRRRROOOOGGGGGGGG...",
+    ".OOKWOOOOGGDGGDGG...",
+    "OOOWKOOOOGGGGGGGG...",
+    "OWOWOWOOOGGGGGGGW...",
+    ".OOOOOOOOGGDGGDGG...",
+    "..OOOOOOOOGGGGGGG...",
+    "...OOOOOOOOOOOOOO...",
+    "...OOOOOOOOOOOO.....",
+    "..OOOOOOOOOOOOOO....",
+    "..OOOO..OOOO.OOO....",
+    "..WOO...WOO..WOO....",
+    "...KK...KK...KK.....",
+    "....W....W....W....."
+  ],
+  cheep:[
+    "...RRRRR....",
+    ".RRRRRRRRR..",
+    "RRWWRRRRRR..",
+    "RWKRRRRRRRYY",
+    "RRRRRRRRRRYY",
+    ".RRRRRRRR...",
+    "..WWWWWW....",
+    "...YYYY....."
+  ],
+  bill:[
+    "....KKKKKK..",
+    "..KKKKKKKKKK",
+    ".KKKKKKKKKKK",
+    "KWWKKKKKKKKK",
+    "KWKKRRKKKKKK",
+    "KKKKKRRKKKKK",
+    "KKKKKKKKKKKK",
+    ".KKKKWWKKKKK",
+    "..KKWWWWKKKK",
+    "....KKKKKK.."
+  ],
+  thwomp:[
+    "TTTTTTTTTTTT",
+    "THHHHHHHHHHT",
+    "THKHHHHHHKHT",
+    "THKKHHHHKKHT",
+    "THHHHHHHHHHT",
+    "THKKKKKKKKHT",
+    "THKWKWKWKWHT",
+    "THKKKKKKKKHT",
+    "THHHHHHHHHHT",
+    "TTTTTTTTTTTT"
+  ]
+};
+
+const cache={};
+function im(k,s=5,st='',id=''){
+  if(k==='galoomba'){
+    return `<img class="s" ${id?`id="${id}"`:''} src="${GALOOMBA_SRC}" style="width:48px;height:45px;${st}">`;
+  }
+  if(!cache[k]){
+    const m=SP[k],w=Math.max(...m.map(r=>r.length)),c=document.createElement('canvas');
+    c.width=w;c.height=m.length;
+    const x=c.getContext('2d');
+    m.forEach((r,j)=>[...r].forEach((ch,i)=>{
+      if(P[ch]){x.fillStyle=P[ch];x.fillRect(i,j,1,1)}
+    }));
+    cache[k]={u:c.toDataURL(),w,h:m.length};
+  }
+  const o=cache[k];
+  return `<img class="s" ${id?`id="${id}"`:''} src="${o.u}" style="width:${o.w*s}px;height:${o.h*s}px;${st}">`;
+}
+
+function mv(el,p,ms,e='linear'){
+  el.style.transition=`left ${ms}ms ${e},bottom ${ms}ms ${e},top ${ms}ms ${e},opacity ${ms}ms ${e}`;
+  Object.assign(el.style,p);
+}
+
+function col(t){
+  let i=0;return [...t].map(c=>c===' '?' ':`<span class="c${i++%4}">${c}</span>`).join('');
+}
+
+const sky=()=>`<div class="sky"></div><div class="cl" style="top:35px;animation-delay:-10s"></div><div class="cl" style="top:100px;animation-delay:-28s"></div>`;
+const hills=()=>`<div class="hill" style="left:30px;width:190px;height:120px"></div><div class="bush" style="left:200px;width:120px"></div><div class="hill" style="left:740px;width:160px;height:150px"></div><div class="bush" style="left:650px;width:100px"></div><div class="hill" style="left:850px;width:120px;height:95px"></div>`;
+const CRED='CURSO ÔMEGA - INFORMÁTICA PARA INTERNET<br>EDUARDA · GABRIELLA · MIGUEL PEREIRA · NÁTALY · RYAN · THOMPSON · TÚLIO';
+
+/* =========================================================================
+   ESTADO E NAVEGAÇÃO DO JOGO
+   ========================================================================= */
+let unlocked=1,cur=0,sel=0,scene='title',busy=false,room=0,sl_i=0,lv=0,rdy=false;
+
+function show(id){
+  document.querySelectorAll('.sc').forEach(e=>e.classList.remove('on'));
+  $('#'+id).classList.add('on');
+  scene=id;
+}
+
+async function go(fn){
+  busy=true;
+  $('#f').style.opacity=1;
+  await sl(450);
+  fn();
+  await sl(100);
+  $('#f').style.opacity=0;
+  await sl(450);
+  busy=false;
+}
+
+/* =========================================================================
+   1. CENA DE ABERTURA
+   ========================================================================= */
+function buildTitle(){
+  rdy=false;
+  $('#title').innerHTML=sky()+hills()+`<div class="gr"></div>
+  <div id="ttl" class="ttl">${col('MÁQUINAS')}<br>${col('VIRTUAIS')}<small>${col('A SAGA')}</small></div>
+  <div id="blk" class="q" style="left:448px;top:235px">?</div>
+  ${im('mario',5,'left:-90px;bottom:90px','tm')}
+  <button id="sb" class="btn y">▶ INICIAR JOGO</button>
+  <div class="cred">${CRED}</div>`;
+
+  $('#sb').onclick=()=>startGame();
+}
+
+async function playTitle(){
+  const m=$('#tm'),b=$('#blk');
+  await sl(350);
+
+  // Mario aparece da esquerda andando até o centro embaixo do bloco
+  m.classList.add('bob');
+  mv(m,{left:440},1500);
+  await sl(1500);
+  m.classList.remove('bob');
+  await sl(100);
+
+  // Mario pula dando uma batidinha com a cabeça no bloco
+  SFX.jump();
+  mv(m,{bottom:162},220,'ease-out');
+  await sl(220);
+
+  // Bate a cabeça no bloco: bloco sobe, fica usado, moeda e título aparecem!
+  SFX.bump();
+  b.classList.add('hit');
+  mv(m,{bottom:90},220,'ease-in'); // Mario cai de volta ao chão
+  await sl(100);
+
+  b.classList.remove('hit');
+  b.classList.add('used');
+  SFX.coin();
+  $('#ttl').classList.add('show');
+  await sl(650);
+
+  // Mario sai correndo para a direita
+  m.classList.add('bob');
+  mv(m,{left:1060},1500);
+  await sl(1500);
+
+  $('#sb').classList.add('show');
+  rdy=true;
+}
+
+function startGame(){
+  if(busy)return;
+  initAudio();
+  SFX.click();
+  SFX.pipe();
+  go(()=>{buildMap();show('map')});
+}
+
+/* =========================================================================
+   2. MAPA MUNDI ("ILHA DOS BITS" - Super Mario World)
+   ========================================================================= */
+const LV=[
+  {n:'1-1',t:'O QUE É UMA VM?',x:170,y:360},
+  {n:'1-2',t:'PARA QUE SERVE?',x:390,y:230},
+  {n:'1-3',t:'COMO FUNCIONA?',x:610,y:370},
+  {n:'🏰',t:'CASTELO DO BOWSER',x:810,y:200}
+];
+
+function buildMap(){
+  let h=`<div class="sea"></div><div class="isl"></div>
+  <div class="hill" style="left:110px;bottom:300px;width:120px;height:90px;z-index:1"></div>
+  <div class="hill" style="left:480px;bottom:80px;width:110px;height:80px;z-index:1"></div>
+  <div class="hill" style="left:720px;bottom:90px;width:100px;height:75px;z-index:1"></div>
+  <div class="map-title">MUNDO 1 · ILHA DOS BITS</div>
+  <svg width="960" height="540" style="position:absolute;inset:0;z-index:2">
+    ${[0,1,2].map(i=>`<line id="sg${i}" x1="${LV[i].x}" y1="${LV[i].y}" x2="${LV[i+1].x}" y2="${LV[i+1].y}" stroke="#f8e8a0" stroke-width="10" stroke-dasharray="6 14" stroke-linecap="round"/>`).join('')}
+  </svg>`;
+
+  LV.forEach((l,i)=>{
+    h+=`<div class="nd" id="nd${i}" style="left:${l.x-26}px;top:${l.y-26}px">${i===3?l.n:i+1}</div>
+        <div class="lb" style="left:${l.x}px;top:${l.y+34}px">${i<3?'FASE '+l.n+'<br>':''}${l.t}</div>`;
+  });
+
+  h+=`<div class="arw" id="aw">▼</div>`;
+  h+=im('mario',4,`left:${LV[cur].x-32}px;top:${LV[cur].y-68}px;z-index:10`,'mm');
+  
+  // Botão INÍCIO no Mapa
+  h+=`<div class="nav" style="left:30px;bottom:16px;z-index:15">
+        <button class="btn y" id="map-home" style="font-size:10px;padding:8px 12px">🏠 INÍCIO</button>
+      </div>`;
+
+  $('#map').innerHTML=h;
+
+  LV.forEach((l,i)=>$('#nd'+i).onclick=()=>enter(i));
+  $('#map-home').onclick=goHome;
+  refreshMap();
+}
+
+function refreshMap(prev){
+  LV.forEach((l,i)=>{
+    const n=$('#nd'+i);
+    const isLocked=i>=unlocked;
+    const isDone=i<unlocked-1;
+    n.className='nd '+(isLocked?'lock':(isDone?'done':'open'));
+    if(isLocked)n.textContent='🔒';
+    else n.textContent=i<3?i+1:'🏰';
+    if(prev!==undefined&&i===unlocked-1&&i>=prev){
+      n.classList.add('pop');
+    }
+  });
+
+  [0,1,2].forEach(i=>{$('#sg'+i).style.opacity=i<unlocked-1?1:.25});
+  sel=Math.min(sel,unlocked-1);
+  moveArw();
+}
+
+function moveArw(){
+  $('#aw').style.left=LV[sel].x-11+'px';
+  $('#aw').style.top=LV[sel].y-80+'px';
+}
+
+async function autoAdvanceMap(fromIdx, toIdx){
+  if(toIdx>=LV.length)return;
+  busy=true;
+  const m=$('#mm');
+  m.style.left=(LV[fromIdx].x-32)+'px';
+  m.style.top=(LV[fromIdx].y-68)+'px';
+  sel=fromIdx;
+  cur=fromIdx;
+  moveArw();
+  await sl(450);
+
+  // Mario caminha suavemente até a nova fase desbloqueada
+  m.classList.add('bob');
+  SFX.click();
+  mv(m,{left:LV[toIdx].x-32,top:LV[toIdx].y-68},1100);
+  await sl(1100);
+  m.classList.remove('bob');
+
+  cur=toIdx;
+  sel=toIdx;
+  moveArw();
+  SFX.pipe();
+
+  const nextNode=$('#nd'+toIdx);
+  if(nextNode)nextNode.classList.add('pop');
+  busy=false;
+}
+
+async function enter(i){
+  if(busy||i>=unlocked)return;
+  initAudio();
+  sel=i;
+  moveArw();
+  SFX.click();
+  busy=true;
+
+  if(cur!==i){
+    $('#mm').classList.add('bob');
+    mv($('#mm'),{left:LV[i].x-32,top:LV[i].y-68},900);
+    await sl(900);
+    $('#mm').classList.remove('bob');
+  }
+  cur=i;
+  busy=false;
+  SFX.pipe();
+
+  go(()=>{
+    if(i<3)openLesson(i);
+    else openCastle();
+  });
+}
+
+/* =========================================================================
+   3. FASES DE EXPLICAÇÃO DIDÁTICA (14-18 Anos, Zero Conhecimento Prévio)
+   ========================================================================= */
+const LES=[
+  // FASE 1-1: O que é uma Máquina Virtual?
+  [
+    ["1. UM EMULADOR DE COMPUTADOR",
+     "Você já usou um emulador no celular para jogar jogos de Super Nintendo ou PlayStation?\n\nO emulador finge ser o videogame de verdade. Uma Máquina Virtual (VM) faz a mesma coisa, só que ela finge ser um computador completo dentro do seu PC real!",
+     ["📱|CELULAR REAL","🎮|CONSOLE SIMULADO"]],
+    ["2. UM PC DENTRO DO PC",
+     "Uma Máquina Virtual é um computador 100% digital que vive dentro do seu computador de verdade.\n\nEla é apenas um programa de janela, mas tem tudo que um PC comum tem: sua própria tela, área de trabalho, arquivos e programas próprios!",
+     ["💻|PC REAL","🪟|JANELA DA VM"]],
+    ["3. HOST E GUEST (QUEM É QUEM?)",
+     "HOST (o Anfitrião) é o seu computador real de carne e osso, com as peças que você consegue tocar.\n\nGUEST (o Convidado) é a máquina virtual que mora de visita dentro dele, como um hóspede no quarto da casa.",
+     ["🏠|HOST (PC REAL)","🛋️|GUEST (VM)"]],
+    ["4. A CAIXINHA MÁGICA ISOLADA",
+     "A maior mágica da VM é o ISOLAMENTO: tudo o que acontece lá dentro fica preso lá dentro!\n\nSe a máquina virtual travar, pegar vírus ou der tela azul, o seu computador real continua são, salvo e intacto.",
+     ["🔒|VM BLINDADA","🦠|VÍRUS PRESO","💻|PC SEGURO"]]
+  ],
+  // FASE 1-2: Para que serve uma Máquina Virtual?
+  [
+    ["1. TESTES SEM RISCO",
+     "Quer abrir um arquivo suspeito que baixou na internet ou ver como um vírus se comporta?\n\nFaça isso dentro da máquina virtual! Se der problema, você apaga a VM em 1 clique e seu computador real nunca corre perigo.",
+     ["🧪|TESTE SEGURO","🦠|VÍRUS PRESO","✅|HOST ILIBADO"]],
+    ["2. VÁRIOS SISTEMAS AO MESMO TEMPO",
+     "Seu computador roda Windows, mas no curso de TI você precisa programar no Linux? Ou tem Mac e precisa de um programa de Windows?\n\nCom a VM você abre o Linux numa janela e o Windows na outra, sem precisar formatar nada!",
+     ["🪟|WINDOWS","🐧|LINUX","🍎|MACOS"]],
+    ["3. MÁQUINA DO TEMPO RETRÔ",
+     "Sabe aquele jogo antigo clássico dos anos 2000 que simplesmente não abre mais no Windows 11 moderno?\n\nBasta criar uma VM com Windows XP ou 98 e o jogo volta a rodar perfeitamente como na época!",
+     ["🕹️|JOGO ANTIGO","💾|WINDOWS XP","✨|RODANDO LISO"]],
+    ["4. A BASE DA NUVEM E SERVIDORES",
+     "Empresas economizam milhões com VMs! Em vez de comprar 20 computadores físicos caros, compram 1 supercomputador e criam 20 máquinas virtuais dentro dele.\n\nÉ exatamente assim que funcionam a Nuvem e os laboratórios do SENAI!",
+     ["☁️|NUVEM","💰|ECONOMIA","🏫|MUNDO SENAI"]]
+  ],
+  // FASE 1-3: Como funciona uma Máquina Virtual? (Passo a Passo)
+  [
+    ["PASSO 1 & 2: PEÇAS E O HYPERVISOR",
+     "1) O PC real tem peças físicas: Processador (o cérebro), Memória RAM (a bancada rápida) e Disco (o armário de arquivos).\n\n2) Você instala um programa especial de virtualização chamado HYPERVISOR (exemplos: VirtualBox ou VMware).",
+     ["🧠|PROCESSADOR","🧩|MEMÓRIA RAM","⚖️|HYPERVISOR"]],
+    ["PASSO 3 & 4: EMPRÉSTIMO E SISTEMA",
+     "3) Você cria a VM e escolhe quanto quer 'emprestar' do PC real (ex: emprestar 4GB de RAM e 50GB de disco).\n\n4) Dentro dela, você insere um pen drive digital e instala o sistema operacional que quiser.",
+     ["🎚️|RECURSOS","💿|SISTEMA","⚙️|INSTALAÇÃO"]],
+    ["PASSO 5 & 6: O PLAY E O JUIZ",
+     "5) Você clica no botão PLAY: a VM inicializa numa janela como se fosse outro computador ligando na tomada!\n\n6) O Hypervisor atua como o juiz: quando a VM pede para calcular algo, ele repassa para a CPU real em milissegundos.",
+     ["▶️|LIGAR VM","⚖️|JUIZ DO JOGO","⚡|PROCESSAMENTO"]],
+    ["PASSO 7: ENCERRAMENTO PERFEITO",
+     "7) Ao desligar ou apagar a máquina virtual, toda a memória emprestada volta instantaneamente para o seu PC real.\n\nMissão cumprida! Você já domina Máquinas Virtuais. Agora encare o Castelo do Bowser!",
+     ["⏹️|DESLIGAR","🗑️|APAGAR SEGURO","🏰|DESAFIO FINAL"]]
+  ]
+];
+
+function openLesson(i){
+  lv=i;sl_i=0;
+  const th=i,E=$('#les');
+  let bg='',en='';
+
+  if(th===0){
+    // Planície com Galoombas do SMW andando da DIREITA para a ESQUERDA
+    bg=sky()+hills()+'<div class="gr"></div>';
+    for(let k=0;k<3;k++){
+      en+=im('galoomba',1,`bottom:90px;animation-duration:${13+k*5}s;animation-delay:-${k*5}s`).replace('class="s"','class="s wk"');
+    }
+  }else if(th===1){
+    // Subterrânea / Canos com Galoombas do SMW andando da DIREITA para a ESQUERDA
+    bg=`<div style="position:absolute;inset:0;background:#061036"></div>
+        <div class="gr" style="background:repeating-linear-gradient(90deg,#2840c0 0 4px,transparent 4px 50px),repeating-linear-gradient(#3858e0 0 4px,#182880 4px 24px);border-top:5px solid #000"></div>
+        <div class="pipe" style="left:30px;height:120px"></div><div class="pipe" style="left:860px;height:75px"></div>`;
+    for(let k=0;k<2;k++){
+      en+=im('galoomba',1,`bottom:90px;animation-duration:${12+k*6}s;animation-delay:-${k*6}s`).replace('class="s"','class="s wk"');
+    }
+  }else{
+    // Aquática
+    bg=`<div style="position:absolute;inset:0;background:linear-gradient(#1c5cd0,#082070)"></div>
+        <div class="gr" style="background:repeating-linear-gradient(90deg,#b08850 0 20px,#987038 20px 40px);border-top:5px solid #000;height:60px"></div>`;
+    for(let k=0;k<8;k++){
+      bg+=`<div class="bub" style="left:${50+k*125}px;animation-delay:-${k*.8}s"></div>`;
+    }
+    // Peixes nadando da direita para a esquerda
+    [[350,14,0],[230,11,-4],[120,16,-8]].forEach(([b,d,dl])=>{
+      en+=im('cheep',5,`bottom:${b}px;animation-duration:${d}s;animation-delay:${dl}s`).replace('class="s"','class="s sw-cheep"');
+    });
+    // Bullet Bill cruzando a tela
+    en+=im('bill',5,'bottom:380px;animation-duration:9s;animation-delay:-2s').replace('class="s"','class="s sw-bullet"');
+  }
+
+  E.innerHTML=bg+en+`
+    <div class="hd"><b>FASE 1-${i+1}</b> · ${['O QUE SÃO MÁQUINAS VIRTUAIS?','PARA QUE ELAS SERVEM?','COMO ELAS FUNCIONAM?'][i]}</div>
+    <div class="box" id="lb" style="left:40px;top:100px;width:510px;height:310px"></div>
+    <div class="vis" id="lv"></div>
+    <div class="nav">
+      <div class="nav-grp">
+        <button class="btn b" id="bk">◀ MAPA</button>
+        <button class="btn y" id="les-home">🏠 INÍCIO</button>
+      </div>
+      <span class="dots" id="dt"></span>
+      <div class="nav-grp">
+        <button class="btn" id="pv">◀ VOLTAR</button>
+        <button class="btn y" id="nx">PRÓXIMO ▶</button>
+      </div>
+    </div>`;
+
+  $('#bk').onclick=backMap;
+  $('#les-home').onclick=goHome;
+  $('#pv').onclick=()=>step(-1);
+  $('#nx').onclick=()=>step(1);
+  rSlide();
+  show('les');
+}
+
+function rSlide(){
+  const d=LES[lv][sl_i];
+  $('#lb').innerHTML=`<h2>${d[0]}</h2><p>${d[1].replace(/\n\n/g,'<br><br>')}</p>`;
+  $('#lv').innerHTML=d[2].map(x=>{
+    const[a,b]=x.split('|');
+    return `<div class="ic"><i>${a}</i>${b}</div>`;
+  }).join('');
+
+  $('#dt').innerHTML=LES[lv].map((_,k)=>k===sl_i?'★':'·').join('');
+  $('#pv').disabled=sl_i===0;
+  $('#nx').textContent=sl_i===3?'CONCLUIR FASE ★':'PRÓXIMO ▶';
+}
+
+function step(d){
+  if(busy)return;
+  initAudio();
+  SFX.click();
+  if(d>0&&sl_i===3){
+    const prevUnlocked=unlocked;
+    const completedIdx=lv;
+    const nextIdx=lv+1;
+    unlocked=Math.max(unlocked,nextIdx+1);
+    SFX.win();
+    go(async ()=>{
+      show('map');
+      refreshMap(prevUnlocked);
+      await autoAdvanceMap(completedIdx, nextIdx);
+    });
+    return;
+  }
+  if(sl_i+d<0)return;
+  sl_i+=d;
+  rSlide();
+}
+
+function backMap(){
+  if(busy)return;
+  initAudio();
+  SFX.click();
+  go(()=>{show('map');refreshMap()});
+}
+
+/* =========================================================================
+   4. CASTELO DO BOWSER (O Grande Desafio de 5 Perguntas)
+   ========================================================================= */
+const Q=[
+  ["NÍVEL FÁCIL",
+   "Em termos simples, o que é uma Máquina Virtual (VM)?",
+   ["Um óculos de realidade virtual para jogos 3D",
+    "Um computador simulado por software dentro de um computador real",
+    "Uma placa de vídeo especial instalada na placa-mãe",
+    "Um cabo de rede que conecta dois computadores físicos"],
+   1,
+   "Lembre-se da Fase 1-1: ela é um PC digital dentro do PC real!"],
+
+  ["NÍVEL FÁCIL",
+   "Como chamamos o computador FÍSICO real que hospeda a máquina virtual?",
+   ["Guest (O Convidado)",
+    "Host (O Anfitrião)",
+    "Console Virtual",
+    "Emulador Portátil"],
+   1,
+   "Pense no anfitrião que dá abrigo na sua casa: em inglês, Host."],
+
+  ["NÍVEL MÉDIO",
+   "Por que as VMs são perfeitas para testar arquivos e programas suspeitos?",
+   ["Porque a VM aumenta a velocidade da internet",
+    "Porque a VM apaga os vírus queimando a placa-mãe",
+    "Porque a VM é isolada: o que ocorre nela não infecta o PC real",
+    "Porque a VM bloqueia o teclado para não digitar errado"],
+   2,
+   "A regra de ouro da Fase 1-2 é a caixinha blindada: ISOLAMENTO!"],
+
+  ["NÍVEL MÉDIO / DIFÍCIL",
+   "Qual é o papel do programa HYPERVISOR (como VirtualBox ou VMware)?",
+   ["Trocar o papel de parede automaticamente",
+    "Criar a VM e dividir memória, processador e disco entre ela e o PC real",
+    "Fazer overclock no monitor",
+    "Apenas tocar músicas enquanto você navega"],
+   1,
+   "Lembre da Fase 1-3, passo 6: ele é o juiz que distribui as peças reais."],
+
+  ["NÍVEL DIFÍCIL (FINAL)",
+   "Se você criar uma VM com Linux dentro de um PC com Windows e depois apagá-la:",
+   ["O Windows real é formatado e perde todos os dados",
+    "Apenas a VM é excluída; o Windows real continua exatamente intacto",
+    "O processador do computador queima para sempre",
+    "O computador nunca mais consegue ligar"],
+   1,
+   "A VM é apenas um convidado! Apagá-la não mexe em nada no Host."]
+];
+
+function openCastle(){
+  room=0;
+  const C=$('#cas');
+  C.innerHTML=`
+    <div class="brk"></div>
+    <div class="torch" style="left:50px;top:220px">🔥</div>
+    <div class="torch" style="left:880px;top:220px">🔥</div>
+    ${im('thwomp',6,'left:40px;top:60px','tw')}
+    <div class="lava"></div>
+    <div class="pod" style="left:260px"></div>
+    <div class="pod" style="left:520px;animation-delay:-1.2s"></div>
+    <div class="pod" style="left:760px;animation-delay:-.6s"></div>
+    
+    <div class="brg" id="bg1" style="left:0;width:960px"></div>
+    ${im('mario',6,'left:120px;bottom:100px','cm')}
+    ${im('bowser',7,'left:700px;bottom:100px','bw')}
+    ${im('peach',6,'left:820px;bottom:100px;display:none','cp')}
+
+    <div class="qc" id="qc"></div>
+    <div class="nav" style="bottom:10px;left:40px;z-index:15;display:flex;gap:10px">
+      <button class="btn b" id="cb" style="font-size:10px;padding:8px 12px">◀ MAPA</button>
+      <button class="btn y" id="cas-home" style="font-size:10px;padding:8px 12px">🏠 INÍCIO</button>
+    </div>
+    
+    <div class="fim" id="vic" style="top:130px">
+      <div class="ttl" style="font-size:22px;line-height:34px">${col('BOWSER DERROTADO!')}</div>
+      <p style="color:#7fff7f;font-size:11px;margin:14px 0">A Princesa Peach foi resgatada com sucesso! ❤</p>
+      <button class="btn y" id="vb">CONTINUAR ▶</button>
+    </div>`;
+
+  $('#cb').onclick=backMap;
+  $('#cas-home').onclick=goHome;
+  $('#vb').onclick=()=>{
+    SFX.click();
+    go(()=>{buildEnd();show('end');playEnd()});
+  };
+  show('cas');
+  rQ();
+}
+
+function rQ(){
+  const q=Q[room],c=$('#qc');
+  c.style.display='block';
+  c.innerHTML=`
+    <div class="st">
+      <span>DESAFIO DO CASTELO · SALA ${room+1}/5 (${q[0]})</span>
+      <span>${[0,1,2,3,4].map(i=>i<room?'🔓':i===room?'🚪':'🔒').join('')}</span>
+    </div>
+    <h3>${q[1]}</h3>
+    <div class="op">
+      ${q[2].map((o,i)=>`<button data-i="${i}"><b>${'ABCD'[i]})</b> ${o}</button>`).join('')}
+    </div>
+    <div class="msg" id="ms">Escolha a resposta correta (toque na tela ou aperte 1, 2, 3 ou 4).</div>`;
+
+  c.querySelectorAll('button').forEach(b=>b.onclick=()=>ans(+b.dataset.i));
+}
+
+async function ans(i){
+  if(busy||scene!=='cas'||room>4)return;
+  initAudio();
+  const q=Q[room],b=$('#qc').querySelectorAll('button')[i];
+  if(b.disabled)return;
+
+  if(i===q[3]){
+    // Resposta Correta
+    busy=true;
+    b.classList.add('ok');
+    SFX.ok();
+    $('#ms').textContent='RESPOSTA EXATA! A porta da próxima sala foi aberta...';
+    await sl(1200);
+    busy=false;
+    room++;
+    if(room<5){
+      SFX.pipe();
+      rQ();
+    }else{
+      defeat();
+    }
+  }else{
+    // Resposta Errada (Tentativas ilimitadas com dica)
+    b.classList.add('no');
+    b.disabled=true;
+    SFX.no();
+    $('#ms').textContent='RESPOSTA INCORRETA! Tente novamente. DICA: '+q[4];
+    
+    // Tremor na caixa de pergunta e avanço do Bowser
+    const c=$('#qc');
+    c.classList.remove('shk');
+    void c.offsetWidth;
+    c.classList.add('shk');
+
+    $('#bw').style.transform='translateX(-18px)';
+    setTimeout(()=>$('#bw').style.transform='',280);
+  }
+}
+
+async function defeat(){
+  busy=true;
+  $('#qc').style.display='none';
+  SFX.win();
+  await sl(300);
+
+  // O chão NÃO cai! Apenas o Bowser cai girando na lava
+  SFX.boom();
+  $('#bw').classList.add('fall');
+  await sl(1600);
+
+  // Peach surge comemorando
+  $('#cp').style.display='block';
+  $('#cp').classList.add('bob');
+  SFX.coin();
+  await sl(600);
+
+  $('#vic').classList.add('show');
+  busy=false;
+}
+
+/* =========================================================================
+   5. CENA DE FINALIZAÇÃO (Mastro da Bandeira, Descida Bombeiro e Créditos)
+   ========================================================================= */
+function buildEnd(){
+  $('#end').innerHTML=sky()+hills()+`<div class="gr"></div>
+    <!-- Saída do Castelo -->
+    <div style="position:absolute;left:20px;bottom:90px;width:170px;height:190px;background:repeating-linear-gradient(90deg,#777 0 4px,#999 4px 30px);border:5px solid #000;box-shadow:4px 4px 0 rgba(0,0,0,0.5)">
+      <div style="position:absolute;left:50px;bottom:0;width:60px;height:75px;background:#5a2808;border:4px solid #000;border-radius:28px 28px 0 0"></div>
+    </div>
+    
+    <!-- Mastro Alto da Bandeira Super Mario World -->
+    <div style="position:absolute;left:640px;bottom:90px;width:12px;height:340px;background:#18b018;border:3px solid #000;box-shadow:inset 3px 0 #70f070;z-index:4"></div>
+    <div style="position:absolute;left:631px;bottom:426px;width:30px;height:30px;border-radius:50%;background:#f8d818;border:4px solid #000;box-shadow:inset 3px 3px #fff;z-index:5"></div>
+    
+    <!-- Pano da Bandeira -->
+    <div id="fl" style="position:absolute;left:652px;top:120px;width:58px;height:44px;background:#e52521;border:3px solid #000;clip-path:polygon(0 0,100% 50%,0 100%);z-index:4"></div>
+    
+    <!-- Personagens -->
+    ${im('peach',5,'left:70px;bottom:90px;opacity:0;z-index:6','ep')}
+    ${im('mario',5,'left:110px;bottom:90px;opacity:0;z-index:6','em')}
+    ${im('mario_slide',5,'left:605px;bottom:345px;display:none;z-index:6','ems')}
+    
+    <!-- Tela Final de Parabéns e Créditos -->
+    <div class="fim" id="fim" style="top:40px">
+      <div class="ttl" style="font-size:32px;line-height:42px">${col('FIM')}</div>
+      <p style="font-size:12px;color:#f8d818;margin:12px 0">OBRIGADO POR JOGAR!</p>
+      <div style="margin:14px auto;width:145px;background:#fff;padding:6px;border:3px solid #000;border-radius:6px;box-shadow:3px 3px 0 rgba(0,0,0,0.5)">
+        <img src="${SENAI_PIXEL_SRC}" style="width:130px;display:block;margin:0 auto;image-rendering:pixelated">
+      </div>
+      <p style="color:#f8d818;font-size:11px">CURSO ÔMEGA - INFORMÁTICA PARA INTERNET</p>
+      <p style="font-size:10px;line-height:18px">
+        EDUARDA · GABRIELLA · MIGUEL PEREIRA<br>
+        NÁTALY · RYAN · THOMPSON · TÚLIO
+      </p>
+      <br>
+      <button class="btn y" id="again">↻ JOGAR NOVAMENTE</button>
+    </div>`;
+
+  $('#again').onclick=()=>{
+    if(busy)return;
+    SFX.click();
+    unlocked=1;cur=0;sel=0;
+    go(()=>{
+      buildTitle();
+      show('title');
+      playTitle();
+    });
+  };
+}
+
+async function playEnd(){
+  const M=$('#em'),P=$('#ep'),MS=$('#ems'),fl=$('#fl');
+  await sl(300);
+
+  // 1. Mario e Peach saem do castelo juntos até o centro
+  M.style.opacity=P.style.opacity=1;
+  M.classList.add('bob');
+  P.classList.add('bob');
+
+  mv(P,{left:360},2400);
+  mv(M,{left:380},2400);
+  await sl(2450);
+
+  M.classList.remove('bob');
+  P.classList.remove('bob');
+  await sl(250);
+
+  // 2. Mario anda em direção inclinada (diagonal) até o topo do mastro!
+  // Move-se suavemente de (left: 380, bottom: 90) até o topo (left: 605, bottom: 345)
+  SFX.jump();
+  M.classList.add('bob');
+  mv(M,{left:605,bottom:345},1000,'linear');
+  await sl(1020);
+  M.classList.remove('bob');
+
+  // 3. Mario agarra o mastro no topo em postura de bombeiro
+  M.style.display='none';
+  MS.style.display='block';
+  MS.style.left='605px';
+  MS.style.bottom='345px';
+  fl.style.top='120px';
+  await sl(150);
+
+  // 4. Mario e a bandeira descem juntos pixel a pixel até o chão!
+  SFX.slide();
+  const startBottom = 345;
+  const targetBottom = 90;
+  const startTop = 120;
+  const targetTop = 375;
+  const duration = 2400; // ms
+  const startTime = performance.now();
+
+  await new Promise(resolve => {
+    function step(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Movimento pixel a pixel em sincronia absoluta
+      const currentBottom = Math.round(startBottom - (startBottom - targetBottom) * progress);
+      const currentTop = Math.round(startTop + (targetTop - startTop) * progress);
+      
+      MS.style.bottom = currentBottom + 'px';
+      fl.style.top = currentTop + 'px';
+      
+      // Efeito de movimento sutil nos pés
+      if (Math.floor(elapsed / 120) % 2 === 0) {
+        MS.style.transform = 'translateY(-2px)';
+      } else {
+        MS.style.transform = 'translateY(0px)';
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        MS.style.transform = 'none';
+        resolve();
+      }
+    }
+    requestAnimationFrame(step);
+  });
+
+  // 5. Chegada ao chão
+  MS.style.display='none';
+  M.style.display='block';
+  M.style.bottom='90px';
+  M.style.left='605px';
+  SFX.win();
+
+  await sl(400);
+
+  // 6. Peach se aproxima do Mario
+  P.classList.add('bob');
+  mv(P,{left:540},600);
+  await sl(650);
+  P.classList.remove('bob');
+
+  await sl(400);
+
+  // 7. Mario e Peach saem juntos pela direita
+  M.classList.add('bob');
+  P.classList.add('bob');
+  mv(M,{left:1060},2000);
+  await sl(250);
+  mv(P,{left:1060},2100);
+  await sl(2200);
+
+  // 8. Exibe tela final de agradecimentos e créditos
+  $('#fim').classList.add('show');
+}
+
+/* =========================================================================
+   CONTROLES (Teclado e Toque Direto na Tela)
+   ========================================================================= */
+function handleNav(dir){
+  if(busy)return;
+  initAudio();
+  if(scene==='map'){
+    if(dir==='right'||dir==='down'){
+      sel=Math.min(sel+1,unlocked-1);
+      moveArw();
+      SFX.click();
+    }else if(dir==='left'||dir==='up'){
+      sel=Math.max(sel-1,0);
+      moveArw();
+      SFX.click();
+    }
+  }else if(scene==='les'){
+    if(dir==='right')step(1);
+    else if(dir==='left')step(-1);
+  }
+}
+
+function handleAction(act){
+  if(busy)return;
+  initAudio();
+  if(act==='A'){
+    if(scene==='title'&&rdy)startGame();
+    else if(scene==='map')enter(sel);
+    else if(scene==='les')step(1);
+    else if(scene==='end'&&$('#fim').classList.contains('show'))$('#again').click();
+  }else if(act==='B'){
+    if(scene==='les')backMap();
+    else if(scene==='cas')backMap();
+  }
+}
+
+// Teclado Físico
+addEventListener('keydown',e=>{
+  if(busy)return;
+  initAudio();
+  const k=e.key;
+  if(k==='ArrowRight')handleNav('right');
+  else if(k==='ArrowLeft')handleNav('left');
+  else if(k==='ArrowDown')handleNav('down');
+  else if(k==='ArrowUp')handleNav('up');
+  else if(k==='Enter'||k===' ')handleAction('A');
+  else if(k==='Escape'||k==='Backspace')handleAction('B');
+  else if(scene==='cas'&&'1234'.includes(k)&&k){
+    ans(+k-1);
+  }
+});
+
+// Início do Jogo
+buildTitle();
+show('title');
+playTitle();
+
+// Desbloqueia áudio ao primeiro toque ou clique na tela
+document.addEventListener('pointerdown',()=>initAudio(),{once:true});
+</script>
+</body>
+</html>
